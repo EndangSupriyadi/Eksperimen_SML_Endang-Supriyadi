@@ -1,39 +1,41 @@
-name: Automated Preprocessing Pipeline
+name: CI - Python Preprocessing
 
-# Trigger workflow untuk setiap push ke branch main
 on:
   push:
     branches:
       - main
-  workflow_dispatch:   # juga bisa dijalankan manual
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:   # Bisa dijalankan manual
 
 jobs:
-  run-preprocessing:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # --- 1. Checkout repository ---
+      # 1. Checkout repository
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # --- 2. Setup Python environment ---
+      # 2. Setup Python 3.12
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # --- 3. Install dependencies ---
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r preprocessing/requirements.txt
+          pip install pandas numpy scikit-learn   # sesuaikan dengan kebutuhan script-mu
 
-      # --- 4. Run Preprocessing Script ---
+      # 4. Run preprocessing script
       - name: Run preprocessing automation
         run: |
           python preprocessing/automate_preprocessing.py
 
-      # --- 5. Setup Git & commit results ---
+      # 5. Setup Git & push results
       - name: Commit processed dataset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,4 +52,3 @@ jobs:
             git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           else
             echo "No changes to commit"
-          fi
