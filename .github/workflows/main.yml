@@ -9,10 +9,9 @@ on:
 jobs:
   preprocess:
     runs-on: ubuntu-latest
-    environment: username  # pakai environment GitHub, secrets bisa di-set di sini
 
     steps:
-      # 1. Checkout repo
+      # 1. Checkout repository
       - name: Checkout Repo
         uses: actions/checkout@v3
 
@@ -33,16 +32,13 @@ jobs:
         run: |
           python preprocessing/automate_Endang_Supriyadi.py
 
-      # 5. Commit & push hasil preprocessing ke repo
+      # 5. Commit & push hasil preprocessing ke repository
       - name: Commit and Push Preprocessed Files
         env:
-          GIT_USERNAME: ${{ secrets.USERNAME }}
-          GIT_EMAIL: ${{ secrets.EMAIL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
         run: |
-          git config user.name "$GIT_USERNAME"
-          git config user.email "$GIT_EMAIL"
+          git config --global user.name "${{ secrets.USERNAME }}"
+          git config --global user.email "${{ secrets.EMAIL }}"
 
           git add preprocessing/preprocessing_pipeline.joblib || true
           git add preprocessing/train_preprocessed.csv || true
