@@ -32,10 +32,11 @@ jobs:
         run: |
           python preprocessing/automate_Endang_Supriyadi.py
 
-      # 5. Commit dan push hasil preprocessing ke repo
+      # 5. Commit dan push hasil preprocessing
       - name: Commit processed dataset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -44,13 +45,14 @@ jobs:
           git add preprocessing/train_preprocessed.csv || true
           git add preprocessing/test_preprocessed.csv || true
 
+          # Commit jika ada perubahan
           if ! git diff --cached --quiet; then
             git commit -m "Automated preprocessing update"
             git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           else
             echo "No changes to commit"
 
-      # 6. (Opsional) Upload sebagai artifact
+      # 6. Upload hasil preprocessing sebagai artifact
       - name: Upload Preprocessed Files
         uses: actions/upload-artifact@v4
         with:
