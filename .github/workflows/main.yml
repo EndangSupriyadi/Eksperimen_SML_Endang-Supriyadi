@@ -23,20 +23,20 @@ jobs:
 
       # 3. Install dependencies
       - name: Install Dependencies
-        run: |
+        run:  |
           python -m pip install --upgrade pip
           pip install pandas numpy scikit-learn imblearn joblib
 
       # 4. Jalankan preprocessing script
       - name: Run Preprocessing Script
-        run: |
+        run:  |
           python preprocessing/automate_Endang_Supriyadi.py
 
       # 5. Commit & push hasil preprocessing ke repo
       - name: Commit and Push Preprocessed Files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+        run:  |
           git add preprocessing/preprocessing_pipeline.joblib || true
           git add preprocessing/train_preprocessed.csv || true
           git add preprocessing/test_preprocessed.csv || true
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preprocessed-data
-          path: |
+          path:  |
             preprocessing/preprocessing_pipeline.joblib
             preprocessing/train_preprocessed.csv
             preprocessing/test_preprocessed.csv
