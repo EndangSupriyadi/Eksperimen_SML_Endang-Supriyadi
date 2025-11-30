@@ -35,8 +35,6 @@ jobs:
 
       # 5. Commit & push hasil preprocessing ke repository
       - name: Commit and Push Preprocessed Files
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "${{ secrets.USERNAME }}"
           git config --global user.email "${{ secrets.EMAIL }}"
