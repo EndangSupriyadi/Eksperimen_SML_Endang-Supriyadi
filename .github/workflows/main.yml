@@ -47,6 +47,7 @@ jobs:
             git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           else
             echo "No changes to commit"
+          fi
 
       # 6. Upload hasil preprocessing sebagai artifact
       - name: Upload Preprocessed Files
