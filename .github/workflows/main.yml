@@ -4,8 +4,8 @@ on:
   workflow_dispatch:   # bisa dijalankan manual
   push:
     paths:
-      - "preprocessing/**"   # jalan kalau folder preprocessing berubah
-      - "raw_data/**"        # atau dataset mentah berubah
+      - "preprocessing/**"
+      - "raw_data/**"
 
 jobs:
   run-preprocessing:
@@ -33,19 +33,21 @@ jobs:
         run: |
           python preprocessing/automate_preprocessing.py
 
-      # --- 5. Commit hasil processing ke repository ---
+      # --- 5. Setup Git & push results ---
       - name: Commit processed dataset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # default token untuk push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # add folder hasil processing
-          git add processed_data/* || true
+          # Pastikan folder hasil preprocessing ditrack
+          git add processed_data || true
 
-          # Cek apakah ada perubahan
+          # Commit dan push kalau ada perubahan
           if ! git diff --cached --quiet; then
             git commit -m "Automated preprocessing update"
-            git push
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           else
             echo "No changes to commit"
           fi
