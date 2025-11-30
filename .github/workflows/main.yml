@@ -9,7 +9,6 @@ on:
 jobs:
   preprocess:
     runs-on: ubuntu-latest
-    environment: user
 
     steps:
       # 1. Checkout repository
@@ -28,16 +27,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas numpy scikit-learn imblearn joblib
 
-      # 4. Jalankan preprocessing script
+      # 4. Run preprocessing script
       - name: Run Preprocessing Script
         run: |
           python preprocessing/automate_Endang_Supriyadi.py
 
-      # 5. Commit & push hasil preprocessing ke repository
+      # 5. Commit & push hasil preprocessing
       - name: Commit and Push Preprocessed Files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_USERNAME: ${{ secrets.USERNAME }}
+          GIT_EMAIL: ${{ secrets.EMAIL }}
         run: |
-          git config --global user.name "${{ secrets.USERNAME }}"
-          git config --global user.email "${{ secrets.EMAIL }}"
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
 
           git add preprocessing/preprocessing_pipeline.joblib || true
           git add preprocessing/train_preprocessed.csv || true
