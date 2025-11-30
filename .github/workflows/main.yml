@@ -9,6 +9,7 @@ on:
 jobs:
   preprocess:
     runs-on: ubuntu-latest
+    environment: user
 
     steps:
       # 1. Checkout repository
