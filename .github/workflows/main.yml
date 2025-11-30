@@ -1,0 +1,51 @@
+name: Automated Preprocessing Pipeline
+
+on:
+  workflow_dispatch:   # bisa dijalankan manual
+  push:
+    paths:
+      - "preprocessing/**"   # jalan kalau folder preprocessing berubah
+      - "raw_data/**"        # atau dataset mentah berubah
+
+jobs:
+  run-preprocessing:
+    runs-on: ubuntu-latest
+
+    steps:
+      # --- 1. Checkout repository ---
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # --- 2. Setup Python environment ---
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # --- 3. Install dependencies ---
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r preprocessing/requirements.txt
+
+      # --- 4. Run Preprocessing Script ---
+      - name: Run preprocessing automation
+        run: |
+          python preprocessing/automate_preprocessing.py
+
+      # --- 5. Commit hasil processing ke repository ---
+      - name: Commit processed dataset
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # add folder hasil processing
+          git add processed_data/* || true
+
+          # Cek apakah ada perubahan
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated preprocessing update"
+            git push
+          else
+            echo "No changes to commit"
+          fi
