@@ -30,7 +30,7 @@ jobs:
       # 4. Jalankan preprocessing
       - name: Run Preprocessing Script
         run: |
-          python preprocessing/automate_preprocessing.py
+          python preprocessing/automate_Endang_Supriyadi.py
 
       # 5. Commit dan push hasil preprocessing ke repo
       - name: Commit processed dataset
