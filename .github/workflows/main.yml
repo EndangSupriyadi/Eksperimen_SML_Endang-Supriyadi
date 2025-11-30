@@ -9,6 +9,7 @@ on:
 jobs:
   preprocess:
     runs-on: ubuntu-latest
+    environment: username  # pakai environment GitHub, secrets bisa di-set di sini
 
     steps:
       # 1. Checkout repo
@@ -23,38 +24,42 @@ jobs:
 
       # 3. Install dependencies
       - name: Install Dependencies
-        run:  |
+        run: |
           python -m pip install --upgrade pip
           pip install pandas numpy scikit-learn imblearn joblib
 
       # 4. Jalankan preprocessing script
       - name: Run Preprocessing Script
-        run:  |
+        run: |
           python preprocessing/automate_Endang_Supriyadi.py
 
       # 5. Commit & push hasil preprocessing ke repo
       - name: Commit and Push Preprocessed Files
         env:
+          GIT_USERNAME: ${{ secrets.USERNAME }}
+          GIT_EMAIL: ${{ secrets.EMAIL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run:  |
+        shell: bash
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+
           git add preprocessing/preprocessing_pipeline.joblib || true
           git add preprocessing/train_preprocessed.csv || true
           git add preprocessing/test_preprocessed.csv || true
-          
-          # Commit jika ada perubahan
+
           if ! git diff --cached --quiet; then
             git commit -m "Update preprocessed data"
-            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+            git push https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git
           else
             echo "No changes to commit"
-          fi
 
       # 6. Upload hasil preprocessing sebagai artifact
       - name: Upload Preprocessed Files
         uses: actions/upload-artifact@v4
         with:
           name: preprocessed-data
-          path:  |
+          path: |
             preprocessing/preprocessing_pipeline.joblib
             preprocessing/train_preprocessed.csv
             preprocessing/test_preprocessed.csv
